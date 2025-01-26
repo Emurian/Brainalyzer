@@ -20,7 +20,6 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textColor="@android:color/white" />
-
     </LinearLayout>
 
     <!-- Sign-Up Title -->
@@ -30,7 +29,8 @@
         android:text="Sign Up"
         android:textSize="24sp"
         android:gravity="center"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:textStyle="bold" />
 
     <!-- Input Fields -->
     <EditText
@@ -38,7 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Name"
-        android:layout_marginTop="8dp" />
+        android:inputType="textPersonName"
+        android:layout_marginTop="16dp" />
 
     <EditText
         android:id="@+id/etEmail"
@@ -56,12 +57,30 @@
         android:inputType="textPassword"
         android:layout_marginTop="8dp" />
 
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Confirm Password"
+        android:inputType="textPassword"
+        android:layout_marginTop="8dp" />
+
     <!-- Next Button -->
     <Button
         android:id="@+id/btnNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Next"
+        android:layout_marginTop="16dp" />
+
+    <!-- Login Redirect -->
+    <TextView
+        android:id="@+id/tvLoginRedirect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already have an account? Log In"
+        android:textColor="@color/teal"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp" />
 
     <!-- Help Button -->
