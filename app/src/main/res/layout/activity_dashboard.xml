@@ -20,15 +20,21 @@
             android:textStyle="bold"
             android:gravity="center"
             android:textColor="@android:color/white" />
-
     </LinearLayout>
 
-    <!-- Calendar -->
-    <CalendarView
-        android:id="@+id/calendarView"
+    <!-- Calendar Toggle Button -->
+    <Button
+        android:id="@+id/btnToggleCalendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Calendar"
         android:layout_marginTop="16dp" />
+
+    <!-- Calendar -->
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="268dp" />
 
     <!-- Add Task Button -->
     <Button
@@ -62,12 +68,20 @@
     </ScrollView>
 
     <!-- Help Button -->
+
+    <!-- Logout Button -->
     <Button
         android:id="@+id/btnHelp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Need Help?"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="Need Help?" />
 
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

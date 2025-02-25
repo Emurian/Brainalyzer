@@ -3,5 +3,9 @@
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="teal">#008080</color> <!-- Add teal color -->
-    <color name="violet">#8A2BE2</color> <!-- Add violet color -->
+    <color name="violet">#8A2BE2</color>
+    <color name="light_blue_50">#FFE1F5FE</color>
+    <color name="light_blue_200">#FF81D4FA</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color> <!-- Add violet color -->
 </resources>

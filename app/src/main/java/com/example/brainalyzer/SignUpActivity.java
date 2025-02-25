@@ -30,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity {
             String password = etPassword.getText().toString().trim();
             String confirmPassword = etConfirmPassword.getText().toString().trim();
 
+            // Input validation
             if (TextUtils.isEmpty(email)) {
                 Toast.makeText(SignUpActivity.this, "Please enter your email.", Toast.LENGTH_SHORT).show();
                 return;
@@ -45,11 +46,21 @@ public class SignUpActivity extends AppCompatActivity {
                 return;
             }
 
+            // Register the user
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(SignUpActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignUpActivity.this, SurveyActivity.class));
+
+                            // Reset survey completion status to false (ensuring survey will be shown)
+                            getSharedPreferences("SurveyPrefs", MODE_PRIVATE)
+                                    .edit()
+                                    .putBoolean("isSurveyCompleted", false)
+                                    .apply();
+
+                            // Redirect to SurveyActivity after sign-up
+                            Intent intent = new Intent(SignUpActivity.this, SurveyActivity.class);
+                            startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
