@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,15 +18,17 @@ public class SignInActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private FirebaseAuth firebaseAuth;
     private SharedPreferences sharedPreferences;
+    private ImageView btnBack; // Back button reference
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
-        // Initialize views and FirebaseAuth
+        // Initialize views
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        btnBack = findViewById(R.id.btnBack); // Find back button
         firebaseAuth = FirebaseAuth.getInstance();
 
         // Initialize SharedPreferences
@@ -33,10 +37,12 @@ public class SignInActivity extends AppCompatActivity {
         // Check if the user is already logged in
         if (firebaseAuth.getCurrentUser() != null) {
             // If logged in, go directly to DashboardActivity
-            Intent mainIntent = new Intent(SignInActivity.this, DashboardActivity.class);
-            startActivity(mainIntent);
+            startActivity(new Intent(SignInActivity.this, DashboardActivity.class));
             finish(); // Close this activity
         }
+
+        // Set up back button click listener
+        btnBack.setOnClickListener(v -> onBackPressed());
 
         // Set up login button click listener
         findViewById(R.id.btnLogin).setOnClickListener(v -> {

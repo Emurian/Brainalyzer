@@ -1,32 +1,53 @@
 package com.example.brainalyzer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
+    private static final int ADD_TASK_REQUEST = 1;
+    private static final int SETTINGS_REQUEST = 2;  // Added a constant for settings request
+
     private LinearLayout taskContainer;
     private List<Task> taskList = new ArrayList<>();
-    private String taskPreference;
-    private String sortingPreference;
     private MaterialCalendarView materialCalendarView;
-    private Button btnCalendarToggle, btnNeedHelp;
-    private boolean isCalendarVisible = true; // Tracks calendar visibility
+    private boolean isCalendarVisible = true;
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser currentUser;
+    private FirebaseFirestore db;
+    private ListenerRegistration taskListener;
+
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
+    private Button btnCalendarToggle;
+
+    private String prioritizationMethod = "Due Date";  // Default sorting method
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,138 +55,198 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         materialCalendarView = findViewById(R.id.calendarView);
         taskContainer = findViewById(R.id.taskContainer);
-        Button btnAddTask = findViewById(R.id.btnAddTask);
-        Button btnLogout = findViewById(R.id.btnLogout);
         btnCalendarToggle = findViewById(R.id.btnToggleCalendar);
-        btnNeedHelp = findViewById(R.id.btnHelp);
+        drawerLayout = findViewById(R.id.drawerLayout);
+        navigationView = findViewById(R.id.navigationView);
+        ImageButton menuButton = findViewById(R.id.menuButton);
 
-        // 🔹 Calendar Toggle Button Logic
-        btnCalendarToggle.setOnClickListener(v -> {
-            if (isCalendarVisible) {
-                materialCalendarView.setVisibility(View.GONE);
-                btnCalendarToggle.setText("Show Calendar");
-            } else {
-                materialCalendarView.setVisibility(View.VISIBLE);
-                btnCalendarToggle.setText("Hide Calendar");
+        firebaseAuth.addAuthStateListener(auth -> {
+            currentUser = firebaseAuth.getCurrentUser();
+            if (currentUser != null) {
+                loadUserPreferences();
+                listenForTaskUpdates();
             }
-            isCalendarVisible = !isCalendarVisible;
         });
 
-        // 🔹 Need Help Button Logic
-        btnNeedHelp.setOnClickListener(v -> {
-            Intent helpIntent = new Intent(DashboardActivity.this, HelpCenterActivity.class);
-            startActivity(helpIntent);
-        });
+        btnCalendarToggle.setOnClickListener(v -> toggleCalendar());
+        menuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
-        // Retrieve preferences from Intent or SharedPreferences
-        SharedPreferences preferences = getSharedPreferences("SurveyPrefs", MODE_PRIVATE);
-        Intent intent = getIntent();
-        taskPreference = intent.getStringExtra("taskCategoryPreference");
-        sortingPreference = intent.getStringExtra("dueDateSortingPreference");
-
-        if (taskPreference == null) {
-            taskPreference = preferences.getString("taskCategoryPreference", "Academic");
-        }
-        if (sortingPreference == null) {
-            sortingPreference = preferences.getString("dueDateSortingPreference", "Due Date");
-        }
-
-        Log.d("DashboardActivity", "Task Preference: " + taskPreference);
-        Log.d("DashboardActivity", "Sorting Preference: " + sortingPreference);
-
-        // Open task input screen
-        btnAddTask.setOnClickListener(v -> {
-            Intent addTaskIntent = new Intent(this, InputTaskActivity.class);
-            startActivityForResult(addTaskIntent, 1);
-        });
-
-        // Logout functionality
-        btnLogout.setOnClickListener(v -> {
-            firebaseAuth.signOut();
-            Toast.makeText(DashboardActivity.this, "You have been logged out.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(DashboardActivity.this, SignInActivity.class));
-            finish();
-        });
-
-        // Display tasks based on preference
-        displayTasks();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            Task newTask = data.getParcelableExtra("task");
-            if (newTask != null) {
-                addTaskToDashboard(newTask);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_home) {
+                startActivity(new Intent(this, DashboardActivity.class));
+            } else if (id == R.id.menu_settings) {
+                startActivityForResult(new Intent(this, SettingsActivity.class), SETTINGS_REQUEST);  // Changed to start for result
+            } else if (id == R.id.menu_help) {
+                startActivity(new Intent(this, HelpCenterActivity.class));
+            } else if (id == R.id.menu_logout) {
+                logoutUser();
             }
-        }
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+
+        findViewById(R.id.btnAddTask).setOnClickListener(v ->
+                startActivityForResult(new Intent(this, InputTaskActivity.class), ADD_TASK_REQUEST)
+        );
     }
 
-    private void addTaskToDashboard(Task task) {
-        taskList.add(task);
-        sortAndDisplayTasks();
+    // Load user preferences for prioritization method
+    private void loadUserPreferences() {
+        if (currentUser == null) return;
+
+        SharedPreferences preferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE);
+        prioritizationMethod = preferences.getString("prioritization", "Due Date");
+
+        listenForTaskUpdates(); // Listen for task updates after preferences are loaded
     }
 
-    private void sortAndDisplayTasks() {
-        if (taskList.isEmpty()) {
-            displayNoTasksMessage();
+    // Listen for task updates from Firestore
+    private void listenForTaskUpdates() {
+        if (currentUser == null) {
+            Toast.makeText(this, "User not authenticated!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Sort tasks based on category preference
-        taskList.sort((task1, task2) -> {
-            boolean isTask1Preferred = task1.getTaskCategory().equals(taskPreference);
-            boolean isTask2Preferred = task2.getTaskCategory().equals(taskPreference);
-            return Boolean.compare(isTask2Preferred, isTask1Preferred);
-        });
-
-        // Sort by difficulty or due date
-        if ("Difficulty".equals(sortingPreference)) {
-            taskList.sort(Comparator.comparingInt(task -> getDifficultyLevel(task.getDifficulty())));
-        } else {
-            taskList.sort(Comparator.comparing(Task::getDueDate, Comparator.nullsLast(Comparator.naturalOrder())));
+        if (taskListener != null) {
+            taskListener.remove();
         }
 
-        displayTasks();
+        taskListener = db.collection("tasks")
+                .document(currentUser.getUid())
+                .collection("userTasks")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(this, "Failed to listen for task updates!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (value != null) {
+                        taskList.clear();
+
+                        for (QueryDocumentSnapshot document : value) {
+                            Task retrievedTask = document.toObject(Task.class);
+                            retrievedTask.setTaskId(document.getId());
+                            taskList.add(retrievedTask);
+                        }
+
+                        sortTasks();  // Sort tasks based on the updated prioritization method
+                        displayTasks(); // Display updated tasks
+                    }
+                });
     }
 
-    private int getDifficultyLevel(String difficulty) {
-        switch (difficulty) {
-            case "High": return 3;
-            case "Medium": return 2;
-            case "Low": return 1;
-            default: return 0;
+    // Sort tasks based on the current prioritization method
+    private void sortTasks() {
+        if ("Difficulty".equals(prioritizationMethod)) {
+            taskList.sort((t1, t2) -> Integer.compare(t2.getDifficulty(), t1.getDifficulty()));
+        } else if ("Due Date".equals(prioritizationMethod)) {
+            taskList.sort(Comparator.comparing(Task::getDueDate));
+        } else if ("Task Type".equals(prioritizationMethod)) {
+            taskList.sort(Comparator.comparing(Task::getTaskCategory));
         }
     }
 
+    // Display tasks in the UI
     private void displayTasks() {
         taskContainer.removeAllViews();
-        if (taskList.isEmpty()) {
-            displayNoTasksMessage();
-            return;
-        }
-
         for (Task task : taskList) {
-            TextView taskView = new TextView(this);
-            taskView.setText(
-                    "Task: " + task.getName() + "\n" +
-                            "Due: " + (task.getDueDate() != null ? task.getDueDate() : "No due date") + "\n" +
-                            "Difficulty: " + task.getDifficulty() + "\n" +
-                            "Category: " + task.getTaskCategory()
+            CardView taskCard = new CardView(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            taskView.setPadding(8, 8, 8, 8);
-            taskView.setBackgroundResource(android.R.color.darker_gray);
-            taskContainer.addView(taskView);
+            params.setMargins(dpToPx(16), dpToPx(8), dpToPx(16), dpToPx(8));
+            taskCard.setLayoutParams(params);
+            taskCard.setCardElevation(8f);
+            taskCard.setRadius(12f);
+            taskCard.setUseCompatPadding(true);
+
+            LinearLayout layout = new LinearLayout(this);
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.setPadding(dpToPx(16), dpToPx(16), dpToPx(16), dpToPx(16));
+
+            TextView taskView = new TextView(this);
+            taskView.setText(String.format("Task: %s\nDue: %s\nDifficulty: %s\nCategory: %s",
+                    task.getName(),
+                    task.getFormattedDueDate(),
+                    getDifficultyLabel(task.getDifficulty()),
+                    task.getTaskCategory()));
+
+            Button btnComplete = new Button(this);
+            btnComplete.setText("Complete");
+            btnComplete.setOnClickListener(v -> markTaskAsComplete(task));
+
+            Button btnDelete = new Button(this);
+            btnDelete.setText("Delete");
+            btnDelete.setOnClickListener(v -> deleteTask(task));
+
+            layout.addView(taskView);
+            layout.addView(btnComplete);
+            layout.addView(btnDelete);
+
+            taskCard.addView(layout);
+            taskContainer.addView(taskCard);
         }
     }
 
-    private void displayNoTasksMessage() {
-        TextView noTasksView = new TextView(this);
-        noTasksView.setText("No tasks available.");
-        noTasksView.setPadding(8, 8, 8, 8);
-        taskContainer.addView(noTasksView);
+    private String getDifficultyLabel(int difficulty) {
+        return difficulty == 3 ? "High" : difficulty == 2 ? "Medium" : "Low";
+    }
+
+    private void markTaskAsComplete(Task task) {
+        // Logic for completing a task
+    }
+
+    private void deleteTask(Task task) {
+        if (currentUser != null) {
+            db.collection("tasks")
+                    .document(currentUser.getUid())
+                    .collection("userTasks")
+                    .document(task.getTaskId())
+                    .delete()
+                    .addOnSuccessListener(aVoid ->
+                            Toast.makeText(this, "Task deleted successfully!", Toast.LENGTH_SHORT).show()
+                    )
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to delete task.", Toast.LENGTH_SHORT).show()
+                    );
+        }
+    }
+
+    private void logoutUser() {
+        firebaseAuth.signOut();
+        Toast.makeText(this, "You have been logged out.", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, SignInActivity.class));
+        finish();
+    }
+
+    private void toggleCalendar() {
+        if (isCalendarVisible) {
+            materialCalendarView.setVisibility(View.GONE);
+        } else {
+            materialCalendarView.setVisibility(View.VISIBLE);
+        }
+        isCalendarVisible = !isCalendarVisible;
+    }
+
+    private int dpToPx(int dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                getResources().getDisplayMetrics()
+        );
+    }
+
+    // This method is triggered when SettingsActivity finishes
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SETTINGS_REQUEST && resultCode == RESULT_OK) {
+            loadUserPreferences(); // Reload preferences if settings were changed
+        }
     }
 }

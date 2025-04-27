@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+
+    <!-- Background Color -->
+    <path
+        android:fillColor="#F8F9FA"
+        android:pathData="M0,0h360v640h-360z" />
+
+    <!-- Light Gray Wave -->
+    <path
+        android:fillColor="#E1E4E8"
+        android:pathData="M0,200 Q180,300 360,200 L360,640 H0 Z" />
+
+    <!-- Medium Gray Wave -->
+    <path
+        android:fillColor="#D1D5DB"
+        android:pathData="M0,300 Q180,400 360,300 L360,640 H0 Z" />
+
+    <!-- Dark Blue Curve -->
+    <path
+        android:fillColor="#0A192F"
+        android:pathData="M0,400 Q180,500 360,400 L360,640 H0 Z" />
+</vector>

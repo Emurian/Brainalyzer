@@ -1,4 +1,4 @@
-package com.example.brainalyzer;
+package com.example.brainalyzer.notifications;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

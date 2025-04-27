@@ -2,19 +2,47 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.brainalyzer">
 
-    <!-- Required permissions -->
+    <!-- Required Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <!-- Permission for notifications (Required for Android 13 and above) -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"
-        android:required="true" /> <!-- It's usually better to set this as 'true' for compatibility. -->
+    <!-- Post Notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <!-- Main Application Declaration -->
     <application
         android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="Brainalyzer"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:icon="@mipmap/ic_launcher">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <!-- Firebase Initialization (Important for Firebase to work properly) -->
+        <meta-data
+            android:name="com.google.firebase.database.database_url"
+            android:value="https://brainalyzer-fc760-default-rtdb.firebaseio.com" />
+
+        <meta-data
+            android:name="com.google.firebase.auth.api_key"
+            android:value="@string/default_web_client_id" />
+
+        <!-- Google Play Services Version (Required for Firebase) -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <!-- Firebase Default Notification Icon -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- Main Activity (Launcher) -->
         <activity
@@ -33,14 +61,28 @@
         <activity android:name=".DashboardActivity" android:exported="true" />
         <activity android:name=".InputTaskActivity" android:exported="true" />
         <activity android:name=".HelpCenterActivity" android:exported="true" />
+        <activity android:name=".SettingsActivity" android:exported="true" />
 
-        <!-- Broadcast Receiver for Notifications -->
+        <!-- Broadcast Receiver for Task Notifications -->
         <receiver
-            android:name=".NotificationReceiver"
+            android:name=".notifications.NotificationReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.example.brainalyzer.NOTIFY_TASK" />
             </intent-filter>
+        </receiver>
+
+        <!-- Task Widget Provider -->
+        <receiver
+            android:name=".widget.TaskWidgetProvider"
+            android:label="Brainalyzer Task Widget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/task_widget_info" />
         </receiver>
 
     </application>

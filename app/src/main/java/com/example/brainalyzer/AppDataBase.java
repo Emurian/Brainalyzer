@@ -9,12 +9,11 @@ import androidx.room.migration.Migration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Task.class}, version = 3, exportSchema = false)
+@Database(entities = {Task.class}, version = 5, exportSchema = false)  // 🔹 Increase version
 public abstract class AppDataBase extends RoomDatabase {
 
     private static volatile AppDataBase INSTANCE;
-    private static final ExecutorService databaseWriteExecutor =
-            Executors.newFixedThreadPool(4);
+    private static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(4);
 
     public abstract TaskDao taskDao();
 
@@ -24,8 +23,8 @@ public abstract class AppDataBase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                     AppDataBase.class, "task_database")
-                            .addMigrations(MIGRATION_2_3)
-                            .fallbackToDestructiveMigration()  // WARNING: Resets database if migration fails
+                            .addMigrations(MIGRATION_4_5) // ✅ Apply the correct migration
+                            .fallbackToDestructiveMigration() // 🔹 Resets DB if migration fails
                             .build();
                 }
             }
@@ -37,28 +36,27 @@ public abstract class AppDataBase extends RoomDatabase {
         return databaseWriteExecutor;
     }
 
-    // ✅ **Fixed Migration from version 2 to 3**
-    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+    // ✅ **Fixed Migration: Preserves "taskId" as Primary Key**
+    static final Migration MIGRATION_4_5 = new Migration(4, 5) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            // Step 1: Create new `tasks_new` table with correct constraints
+            // Step 1: Create new table with "taskId" as the primary key
             database.execSQL("CREATE TABLE IF NOT EXISTS tasks_new (" +
-                    "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "taskId TEXT PRIMARY KEY NOT NULL, " +  // 🔹 Keep "taskId" instead of "id"
                     "name TEXT NOT NULL, " +
                     "dueDate TEXT NOT NULL, " +
                     "difficulty TEXT, " +
                     "taskCategory TEXT, " +
-                    "userId TEXT NOT NULL DEFAULT '' " +
-                    ")");
+                    "userId TEXT NOT NULL)");
 
-            // Step 2: Copy old data to new table (fill `userId` with default value)
-            database.execSQL("INSERT INTO tasks_new (id, name, dueDate, difficulty, taskCategory, userId) " +
-                    "SELECT id, name, dueDate, difficulty, taskCategory, '' FROM tasks");
+            // Step 2: Copy data from old table to new table
+            database.execSQL("INSERT INTO tasks_new (taskId, name, dueDate, difficulty, taskCategory, userId) " +
+                    "SELECT taskId, name, dueDate, difficulty, taskCategory, userId FROM tasks");
 
-            // Step 3: Remove old `tasks` table
+            // Step 3: Drop the old "tasks" table
             database.execSQL("DROP TABLE tasks");
 
-            // Step 4: Rename `tasks_new` to `tasks`
+            // Step 4: Rename "tasks_new" to "tasks"
             database.execSQL("ALTER TABLE tasks_new RENAME TO tasks");
         }
     };

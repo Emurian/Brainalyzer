@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="360dp"
+    android:height="640dp"
+    android:viewportWidth="360"
+    android:viewportHeight="640">
+
+    <!-- Background Color -->
+    <path
+        android:fillColor="#F8F9FA"
+        android:pathData="M0,0h360v640h-360z" />
+
+    <!-- Extended Light Blue Splash Across the Top -->
+    <path
+        android:fillColor="#A1C4FD"
+        android:pathData="M-20,-20 Q100,40 180,60 Q260,80 380,40 Q400,-20 360,-40 Q200,-60 -20,-20 Z" />
+
+    <!-- Light Gray Wave -->
+    <path
+        android:fillColor="#E1E4E8"
+        android:pathData="M0,420 Q90,350 180,420 Q270,490 360,420 L360,520 L0,520 Z" />
+
+    <!-- Medium Gray Wave -->
+    <path
+        android:fillColor="#D1D5DB"
+        android:pathData="M0,460 Q90,380 180,460 Q270,540 360,460 L360,560 L0,560 Z" />
+
+    <!-- Dark Blue Bottom Section (For Input Fields) -->
+    <path
+        android:fillColor="#0A192F"
+        android:pathData="M0,500 Q90,400 180,500 Q270,600 360,500 L360,640 L0,640 Z" />
+
+</vector>

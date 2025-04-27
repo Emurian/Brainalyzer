@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Basic Colors -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="teal">#008080</color> <!-- Add teal color -->
+    <color name="white_background">#FFFFFF</color> <!-- Added for missing reference -->
+    <color name="teal">#008080</color>
     <color name="violet">#8A2BE2</color>
-    <color name="light_blue_50">#FFE1F5FE</color>
-    <color name="light_blue_200">#FF81D4FA</color>
-    <color name="light_blue_600">#FF039BE5</color>
-    <color name="light_blue_900">#FF01579B</color> <!-- Add violet color -->
+
+    <!-- Light Blue Shades -->
+    <color name="light_blue_50">#E1F5FE</color>
+    <color name="light_blue_200">#81D4FA</color>
+    <color name="light_blue_600">#039BE5</color>
+    <color name="light_blue_900">#01579B</color>
+
+    <!-- Primary UI Colors -->
+    <color name="primaryBlue">#224DFF</color>
+    <color name="buttonBlue">#3A5DFF</color> <!-- Vibrant button color -->
+    <color name="light_blue">#6AAEFE</color> <!-- Accent color -->
+    <color name="darkBlue">#0A122A</color>
+    <color name="light_gray">#F5F5F5</color> <!-- Fixed naming to match layout XML -->
+    <color name="borderGray">#4A4A4A</color> <!-- Border for input fields -->
+    <color name="errorRed">#FF5252</color> <!-- Error messages -->
+
+    <!-- Brainalyzer Themed Colors (Dark Mode) -->
+    <color name="dark_background">#121212</color> <!-- Dark mode background -->
+    <color name="cardBackground">#1E1E1E</color> <!-- Dark card container -->
+    <color name="inputBackground">#2A2A2A</color> <!-- Input field background -->
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#E0E0E0</color> <!-- Light text for dark background -->
+    <color name="textSecondary">#B0B0B0</color> <!-- Muted text -->
+    <color name="textHint">#757575</color> <!-- Input hints -->
+
+    <!-- Theme Colors -->
+    <color name="colorBackground">?android:colorBackground</color> <!-- Uses system theme -->
+    <color name="colorOnBackground">?android:textColorPrimary</color> <!-- Adapts text color -->
 </resources>

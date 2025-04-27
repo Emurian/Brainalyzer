@@ -3,34 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/wave_login_background"
     android:padding="16dp">
 
-    <!-- App Title -->
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp" />
+
+    <!-- Header with Curved Background -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
+        android:layout_height="180dp"
+        android:gravity="center"
         android:padding="16dp">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Brainalyzer"
-            android:textSize="24sp"
+            android:text="Sign In"
+            android:textSize="28sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/black"/>
     </LinearLayout>
-
-    <!-- Sign-In Title -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:textSize="24sp"
-        android:gravity="center"
-        android:layout_marginTop="16dp"
-        android:textStyle="bold" />
 
     <!-- Input Fields -->
     <EditText
@@ -38,6 +38,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
+        android:background="@drawable/rounded_input"
+        android:padding="12dp"
+        android:textColorHint="@color/black"
         android:inputType="textEmailAddress"
         android:layout_marginTop="16dp" />
 
@@ -46,19 +49,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Password"
+        android:background="@drawable/rounded_input"
+        android:padding="12dp"
+        android:textColorHint="@color/black"
         android:inputType="textPassword"
         android:layout_marginTop="8dp" />
-
-    <!-- Login Button -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:layout_marginTop="16dp" />
-
-    <!-- Register Button -->
-
 
     <!-- Forgot Password Link -->
     <TextView
@@ -67,9 +62,18 @@
         android:layout_height="wrap_content"
         android:text="Forgot Password?"
         android:textColor="@color/violet"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp" />
+
+    <!-- Sign In Button -->
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign In"
+        android:textColor="@android:color/white"
+        android:background="@drawable/rounded_button"
+        android:layout_marginTop="16dp" />
 
     <!-- Help Button -->
     <Button
@@ -77,16 +81,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Need Help?"
+        android:background="@drawable/rounded_button_secondary"
+        android:textColor="@android:color/white"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp" />
 
     <!-- Sign-Up Redirect -->
     <TextView
+        android:id="@+id/tvSignUpRedirect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Don't have an account? Sign Up"
         android:textColor="@color/teal"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:id="@+id/tvSignUpRedirect" />
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>

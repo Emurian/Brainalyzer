@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "666419325869",
+    "firebase_url": "https://brainalyzer-fc760-default-rtdb.firebaseio.com",
+    "project_id": "brainalyzer-fc760",
+    "storage_bucket": "brainalyzer-fc760.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666419325869:android:a079271a2f4c37d59b0f24",
+        "android_client_info": {
+          "package_name": "com.example.brainalyzer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "666419325869-l8fcih25f8aij4rtiashm5lv4g3t1c70.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCT6BrT1DyolhADyt3QUp10cj-Fz8Ekurw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "666419325869-l8fcih25f8aij4rtiashm5lv4g3t1c70.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

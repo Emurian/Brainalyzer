@@ -1,33 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="16dp">
+    android:background="@drawable/background_waves"
+    android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+    <!-- Centered Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Brainalyzer"
-        android:textSize="32sp"
-        android:textStyle="bold"
+        android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp" />
+        android:layout_centerInParent="true">
 
-    <Button
-        android:id="@+id/btnSignIn"
+        <!-- App Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Brainalyzer"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/primaryBlue"
+            android:padding="16dp" />
+
+        <!-- App Slogan -->
+        <TextView
+            android:id="@+id/tvSlogan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage your academic and personal life better"
+            android:textSize="14sp"
+            android:textColor="@color/darkBlue"
+            android:gravity="center"
+            android:paddingBottom="24dp" />
+    </LinearLayout>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:padding="16dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnSignUp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:padding="16dp" />
+        <Button
+            android:id="@+id/btnSignIn"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_button"
+            android:padding="16dp"
+            android:text="Sign In"
+            android:textColor="@color/white" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnSignUp"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button_secondary"
+            android:padding="16dp"
+            android:text="Sign Up"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</RelativeLayout>

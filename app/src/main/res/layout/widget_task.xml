@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/widget_background_blue"
+    android:padding="16dp"
+    android:elevation="8dp">
+
+    <!-- Date Header -->
+    <TextView
+        android:id="@+id/widgetDateHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading..."
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="start" />
+
+    <!-- Task List Display -->
+    <TextView
+        android:id="@+id/widgetTaskText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fetching tasks..."
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:gravity="start"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:maxLines="5"
+        android:ellipsize="end" />
+
+    <!-- Add Task Button -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/widgetAddTask"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_add"
+            android:background="@drawable/circle_background"
+            android:padding="10dp"
+            android:layout_gravity="end"
+            android:contentDescription="@string/add_task" />
+    </FrameLayout>
+
+</LinearLayout>

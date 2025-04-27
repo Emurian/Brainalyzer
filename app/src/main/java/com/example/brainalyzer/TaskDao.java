@@ -1,11 +1,11 @@
 package com.example.brainalyzer;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 import androidx.room.Delete;
-import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
@@ -25,26 +25,34 @@ public interface TaskDao {
     void deleteTask(Task task);
 
     // Delete a task by its ID
-    @Query("DELETE FROM tasks WHERE id = :taskId")
-    void deleteTaskById(int taskId);
+    @Query("DELETE FROM tasks WHERE taskId = :taskId")
+    void deleteTaskById(String taskId);
+
+    // Delete all tasks for a user (Useful for logout scenarios)
+    @Query("DELETE FROM tasks WHERE userId = :userId")
+    void deleteAllTasksForUser(String userId);
 
     // Get all tasks for a specific user
     @Query("SELECT * FROM tasks WHERE userId = :userId ORDER BY dueDate ASC")
     LiveData<List<Task>> getTasksByUserId(String userId);
 
-    // Get tasks for a specific user, filtered by category
+    // Get tasks for a user filtered by category
     @Query("SELECT * FROM tasks WHERE userId = :userId AND taskCategory = :category ORDER BY dueDate ASC")
     LiveData<List<Task>> getTasksByCategory(String userId, String category);
 
-    // Get tasks for a specific user, sorted by difficulty (higher difficulty first)
+    // Get tasks sorted by difficulty (highest first), then due date
     @Query("SELECT * FROM tasks WHERE userId = :userId ORDER BY difficulty DESC, dueDate ASC")
     LiveData<List<Task>> getTasksByDifficulty(String userId);
 
-    // Get tasks for a specific user that are due in the next X days
+    // Get tasks due within a date range
     @Query("SELECT * FROM tasks WHERE userId = :userId AND dueDate BETWEEN :startDate AND :endDate ORDER BY dueDate ASC")
     LiveData<List<Task>> getTasksDueInRange(String userId, String startDate, String endDate);
 
     // Get overdue tasks for a user
     @Query("SELECT * FROM tasks WHERE userId = :userId AND dueDate < :currentDate ORDER BY dueDate ASC")
     LiveData<List<Task>> getOverdueTasks(String userId, String currentDate);
+
+    // Get a task by its taskId
+    @Query("SELECT * FROM tasks WHERE taskId = :taskId LIMIT 1")
+    Task getTaskById(String taskId);
 }
